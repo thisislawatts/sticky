@@ -10,3 +10,7 @@ Example Usages
 ```
 
 ### Todo
+
+* Examples
+* Tests
+* Remove dependencies(?)

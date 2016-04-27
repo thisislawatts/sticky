@@ -14,7 +14,7 @@
 		var _this = this;
 
 		_this.options = {
-			full_width: $el.data('sticky-full-width') === '',
+			fullWidth: $el.data('sticky-full-width') === '',
 			fixed: $el.data('sticky-fixed') === ''
 		};
 
@@ -44,6 +44,18 @@
 		console.log("Options: ", _this.options);
 		console.log("Offset Top: ", _this.offsetTop);
 		_this.offsetLeft = this.$wrap.offset().left + this.$el.offset().left;
+
+		_this.initWindowWidth = window.innerWidth;
+
+		if ( _this.options.fullWidth ) {
+			jQuery(window).on('resize', function() {
+				if ( _this.initWindowWidth !== window.innerWidth ) {
+					_this.initWindowWidth = window.innerWidth;
+					_this.$el.css(_this.getElementStyle());
+					jQuery('#' + _this.sticky_id ).css('width', _this.viewportWidthMinusScrollBars() );
+				}
+			});
+		}
 	};
 
 
@@ -76,7 +88,7 @@
 	Sticky.prototype.getWrapperStyles = function() {
 
 		var _this = this,
-			position = (_this.$el.css('position') === "absolute" ) ? 'absolute' : 'relative',
+			position = (_this.$el.css('position') === 'absolute' ) ? 'absolute' : 'relative',
 			styles = {};
 
 		if ( position === 'absolute' ) {
@@ -85,7 +97,7 @@
 				var prop = arr[i],
 					val = _this.$el.css(prop);
 
-				if ( val !== "auto" ) {
+				if ( val !== 'auto' ) {
 					styles[prop] = val;
 				}
 			}
@@ -94,23 +106,27 @@
 		}
 
 		return $.extend({
-			'height': ( _this.$el.outerHeight() + parseFloat( _this.$el.css('margin-bottom') ) ),
+			'height'  : ( _this.$el.outerHeight() + parseFloat( _this.$el.css('margin-bottom') ) ),
 			'position': position,
-			'width' : _this.$el.outerWidth()
+			'width'   : _this.$el.outerWidth()
 		}, styles );
+	};
+
+	Sticky.prototype.viewportWidthMinusScrollBars = function() {
+		return window.innerWidth - this.getScrollbarWidth();
 	};
 
 	Sticky.prototype.getElementStyle = function() {
 
 		var _this = this,
 			styles = {
-			'position': 'fixed',
-			'top' : _this.options.fixed ? _this.offsetTop : 0,
-			'width': _this.$el.outerWidth()
+			'position'	: 'fixed',
+			'top'		: _this.options.fixed ? _this.offsetTop : 0,
+			'width'		: _this.$el.outerWidth()
 		};
 
-		if ( _this.options.full_width ) {
-			styles.width = window.innerWidth - _this.getScrollbarWidth();
+		if ( _this.options.fullWidth ) {
+			styles.width = _this.viewportWidthMinusScrollBars();
 
 		} else {
 			styles = $.extend(styles, {
